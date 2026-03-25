@@ -216,3 +216,31 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Kiro AI assistant files (hide from client)
+.kiro/
+.kiro-*
+*.kiro
+
+# AI coding artifacts
+check_scores.py
+tempCodeRunnerFile.py
+
+# Large model files (too big for GitHub, provide via release or cloud storage)
+# artifacts/sentinel_best.pt
+# artifacts/lgbm_baseline.pkl
+# artifacts/pipeline.pkl
+# artifacts/*.pt
+# artifacts/*.pkl
+
+# Data directories (generated, not source controlled)
+data/
+data/sim/
+data/processed/
+
+# Coverage and test artifacts
+htmlcov/
+.coverage
+coverage.xml
+.hypothesis/
+.pytest_cache/
