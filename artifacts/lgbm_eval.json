@@ -1,0 +1,67 @@
+{
+  "classification_report": {
+    "HEALTHY": {
+      "precision": 1.0,
+      "recall": 0.9990516532844408,
+      "f1-score": 0.9995256016951832,
+      "support": 94902.0
+    },
+    "CAVITATION": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3950.0
+    },
+    "BEARING_WEAR": {
+      "precision": 0.981261711430356,
+      "recall": 1.0,
+      "f1-score": 0.9905422446406053,
+      "support": 4713.0
+    },
+    "SEAL_LEAK": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4427.0
+    },
+    "accuracy": 0.9991666049336988,
+    "macro avg": {
+      "precision": 0.995315427857589,
+      "recall": 0.9997629133211102,
+      "f1-score": 0.9975169615839471,
+      "support": 107992.0
+    },
+    "weighted avg": {
+      "precision": 0.9991822213309437,
+      "recall": 0.9991666049336988,
+      "f1-score": 0.9991703482764228,
+      "support": 107992.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      94812,
+      0,
+      90,
+      0
+    ],
+    [
+      0,
+      3950,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      4713,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      4427
+    ]
+  ]
+}
