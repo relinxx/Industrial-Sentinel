@@ -1,0 +1,223 @@
+{
+  "version": "1.0",
+  "n_features": 34,
+  "roll_window": 30,
+  "slope_window": 20,
+  "fft_window": 64,
+  "warmup_steps": 64,
+  "features": [
+    {
+      "name": "discharge_pressure_raw",
+      "type": "raw",
+      "sensor": "discharge_pressure",
+      "window": null
+    },
+    {
+      "name": "discharge_pressure_roll_mean",
+      "type": "rolling_mean",
+      "sensor": "discharge_pressure",
+      "window": 30
+    },
+    {
+      "name": "discharge_pressure_roll_std",
+      "type": "rolling_std",
+      "sensor": "discharge_pressure",
+      "window": 30
+    },
+    {
+      "name": "discharge_pressure_slope",
+      "type": "ols_slope",
+      "sensor": "discharge_pressure",
+      "window": 20
+    },
+    {
+      "name": "discharge_pressure_delta",
+      "type": "first_diff",
+      "sensor": "discharge_pressure",
+      "window": 1
+    },
+    {
+      "name": "suction_pressure_raw",
+      "type": "raw",
+      "sensor": "suction_pressure",
+      "window": null
+    },
+    {
+      "name": "suction_pressure_roll_mean",
+      "type": "rolling_mean",
+      "sensor": "suction_pressure",
+      "window": 30
+    },
+    {
+      "name": "suction_pressure_roll_std",
+      "type": "rolling_std",
+      "sensor": "suction_pressure",
+      "window": 30
+    },
+    {
+      "name": "suction_pressure_slope",
+      "type": "ols_slope",
+      "sensor": "suction_pressure",
+      "window": 20
+    },
+    {
+      "name": "suction_pressure_delta",
+      "type": "first_diff",
+      "sensor": "suction_pressure",
+      "window": 1
+    },
+    {
+      "name": "flow_rate_raw",
+      "type": "raw",
+      "sensor": "flow_rate",
+      "window": null
+    },
+    {
+      "name": "flow_rate_roll_mean",
+      "type": "rolling_mean",
+      "sensor": "flow_rate",
+      "window": 30
+    },
+    {
+      "name": "flow_rate_roll_std",
+      "type": "rolling_std",
+      "sensor": "flow_rate",
+      "window": 30
+    },
+    {
+      "name": "flow_rate_slope",
+      "type": "ols_slope",
+      "sensor": "flow_rate",
+      "window": 20
+    },
+    {
+      "name": "flow_rate_delta",
+      "type": "first_diff",
+      "sensor": "flow_rate",
+      "window": 1
+    },
+    {
+      "name": "motor_current_raw",
+      "type": "raw",
+      "sensor": "motor_current",
+      "window": null
+    },
+    {
+      "name": "motor_current_roll_mean",
+      "type": "rolling_mean",
+      "sensor": "motor_current",
+      "window": 30
+    },
+    {
+      "name": "motor_current_roll_std",
+      "type": "rolling_std",
+      "sensor": "motor_current",
+      "window": 30
+    },
+    {
+      "name": "motor_current_slope",
+      "type": "ols_slope",
+      "sensor": "motor_current",
+      "window": 20
+    },
+    {
+      "name": "motor_current_delta",
+      "type": "first_diff",
+      "sensor": "motor_current",
+      "window": 1
+    },
+    {
+      "name": "vibration_rms_raw",
+      "type": "raw",
+      "sensor": "vibration_rms",
+      "window": null
+    },
+    {
+      "name": "vibration_rms_roll_mean",
+      "type": "rolling_mean",
+      "sensor": "vibration_rms",
+      "window": 30
+    },
+    {
+      "name": "vibration_rms_roll_std",
+      "type": "rolling_std",
+      "sensor": "vibration_rms",
+      "window": 30
+    },
+    {
+      "name": "vibration_rms_slope",
+      "type": "ols_slope",
+      "sensor": "vibration_rms",
+      "window": 20
+    },
+    {
+      "name": "vibration_rms_delta",
+      "type": "first_diff",
+      "sensor": "vibration_rms",
+      "window": 1
+    },
+    {
+      "name": "bearing_temp_raw",
+      "type": "raw",
+      "sensor": "bearing_temp",
+      "window": null
+    },
+    {
+      "name": "bearing_temp_roll_mean",
+      "type": "rolling_mean",
+      "sensor": "bearing_temp",
+      "window": 30
+    },
+    {
+      "name": "bearing_temp_roll_std",
+      "type": "rolling_std",
+      "sensor": "bearing_temp",
+      "window": 30
+    },
+    {
+      "name": "bearing_temp_slope",
+      "type": "ols_slope",
+      "sensor": "bearing_temp",
+      "window": 20
+    },
+    {
+      "name": "bearing_temp_delta",
+      "type": "first_diff",
+      "sensor": "bearing_temp",
+      "window": 1
+    },
+    {
+      "name": "dp_sp_ratio",
+      "type": "ratio",
+      "sensors": [
+        "discharge_pressure",
+        "suction_pressure"
+      ],
+      "window": null
+    },
+    {
+      "name": "flow_current_ratio",
+      "type": "ratio",
+      "sensors": [
+        "flow_rate",
+        "motor_current"
+      ],
+      "window": null
+    },
+    {
+      "name": "vib_fft_peak_freq",
+      "type": "fft_peak_freq",
+      "sensor": "vibration_rms",
+      "window": 64,
+      "sample_rate_hz": 1.0
+    },
+    {
+      "name": "vib_fft_peak_amp",
+      "type": "fft_peak_amp",
+      "sensor": "vibration_rms",
+      "window": 64,
+      "sample_rate_hz": 1.0
+    }
+  ],
+  "notes": "All rolling features use strictly past values (no look-ahead). Warmup_steps rows at the start of any stream must be discarded before passing to the model."
+}
