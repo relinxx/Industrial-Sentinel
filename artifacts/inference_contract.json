@@ -1,0 +1,89 @@
+{
+  "version": "1.0",
+  "model_file": "sentinel.onnx",
+  "onnx_opset": 17,
+  "framework": "PyTorch \u2192 ONNX Runtime",
+  "input": {
+    "name": "sensor_window",
+    "shape": [
+      "batch",
+      60,
+      34
+    ],
+    "dtype": "float32",
+    "description": "Sliding window of 60 timesteps \u00d7 34 engineered features. Features must be scaled with the provided scaler_config before inference.",
+    "seq_len": 60,
+    "n_features": 34
+  },
+  "outputs": {
+    "regime_logits": {
+      "name": "regime_logits",
+      "shape": [
+        "batch",
+        4
+      ],
+      "dtype": "float32",
+      "description": "Raw logits \u2014 apply softmax to get class probabilities.",
+      "labels": [
+        "HEALTHY",
+        "CAVITATION",
+        "BEARING_WEAR",
+        "SEAL_LEAK"
+      ],
+      "label_indices": {
+        "HEALTHY": 0,
+        "CAVITATION": 1,
+        "BEARING_WEAR": 2,
+        "SEAL_LEAK": 3
+      },
+      "post_process": "softmax"
+    },
+    "anomaly_score": {
+      "name": "anomaly_score",
+      "shape": [
+        "batch",
+        1
+      ],
+      "dtype": "float32",
+      "range": [
+        0.0,
+        1.0
+      ],
+      "description": "Anomaly probability (sigmoid applied in model). Higher = more anomalous.",
+      "recommended_threshold": 0.5,
+      "regime_thresholds": {}
+    },
+    "forecast": {
+      "name": "forecast",
+      "shape": [
+        "batch",
+        10,
+        6
+      ],
+      "dtype": "float32",
+      "description": "Next 10 timestep forecast of raw sensor values.",
+      "forecast_steps": 10,
+      "sensor_order": [
+        "discharge_pressure [bar]",
+        "suction_pressure [bar]",
+        "flow_rate [m3/h]",
+        "motor_current [A]",
+        "vibration_rms [mm/s]",
+        "bearing_temp [C]"
+      ]
+    }
+  },
+  "preprocessing": {
+    "scaler_type": "StandardScaler",
+    "scaler_config": "artifacts\\scaler_config.json",
+    "feature_spec": "artifacts\\feature_spec.json",
+    "warmup_steps": 64,
+    "description": "1. Resample to 1 Hz. 2. Impute missing values (forward-fill, then zero-fill). 3. Compute engineered features per feature_spec.json. 4. Apply StandardScaler: x_scaled = (x - mean) / std. 5. Buffer seq_len=60 steps into a sliding window. 6. Pass window to ONNX Runtime as float32 tensor."
+  },
+  "runtime": {
+    "tested_provider": "CPUExecutionProvider",
+    "dotnet_package": "Microsoft.ML.OnnxRuntime",
+    "min_dotnet_version": "net6.0",
+    "sample_csharp": "var session = new InferenceSession(\"sentinel.onnx\");\nvar inputTensor = new DenseTensor<float>(data, new[] { 1, 60, 34 });\nvar inputs = new List<NamedOnnxValue> {\n    NamedOnnxValue.CreateFromTensor(\"sensor_window\", inputTensor)\n};\nusing var results = session.Run(inputs);\nvar regimeLogits = results.First(r => r.Name == \"regime_logits\").AsTensor<float>();\nvar anomalyScore = results.First(r => r.Name == \"anomaly_score\").AsTensor<float>();"
+  }
+}
