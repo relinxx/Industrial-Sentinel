@@ -12,7 +12,7 @@ dropout:       0.30
 # Loss weights
 w_regime:      1.0         # regime classification
 w_anomaly:     0.50        # anomaly score
-w_forecast:    0.30        # short-horizon forecast
+w_forecast:    0.05        # short-horizon forecast (was 0.3)
 
 patience:      8           # early stopping patience (val_loss)
 

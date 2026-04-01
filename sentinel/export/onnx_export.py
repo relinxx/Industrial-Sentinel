@@ -156,8 +156,7 @@ def write_inference_contract(
                 "range":       [0.0, 1.0],
                 "description": "Anomaly probability (sigmoid applied in model). "
                                "Higher = more anomalous.",
-                "recommended_threshold": (thresholds or {}).get("anomaly_global", 0.5),
-                "regime_thresholds": (thresholds or {}).get("anomaly_per_regime", {}),
+                "recommended_threshold": (thresholds or {}).get("threshold", 0.5),
             },
             "forecast": {
                 "name":        "forecast",

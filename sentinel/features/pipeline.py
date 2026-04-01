@@ -2,15 +2,16 @@
 Feature engineering pipeline for industrial sensor streams.
 
 All transforms are documented in feature_spec.json for C# reimplementation.
-No leakage: all rolling features use only past values (closed='left' semantics
-are handled by computing on [t-window : t-1]).
+No leakage: all rolling features use only past values. Rolling mean and std
+are computed by shifting the series by 1 timestep before applying the rolling
+window. Slope features use a window ending at t-1 (not t).
 
 Features produced per raw sensor (6 sensors × 5 base features = 30)
 ---------------------------------------------------------------------
   {sensor}_raw          - z-scored raw value
-  {sensor}_roll_mean    - rolling mean over ROLL_WINDOW steps
-  {sensor}_roll_std     - rolling std  over ROLL_WINDOW steps
-  {sensor}_slope        - linear regression slope over SLOPE_WINDOW steps
+  {sensor}_roll_mean    - rolling mean over ROLL_WINDOW steps (past values only)
+  {sensor}_roll_std     - rolling std  over ROLL_WINDOW steps (past values only)
+  {sensor}_slope        - linear regression slope over SLOPE_WINDOW steps (past values only)
   {sensor}_delta        - diff from previous step
 
 Extra cross-sensor / spectral features (4)
@@ -86,17 +87,17 @@ def engineer_features(df: pd.DataFrame, sample_rate_hz: float = 1.0) -> pd.DataF
 
         feat[f"{col}_raw"]       = s
         feat[f"{col}_roll_mean"] = (
-            pd.Series(s).rolling(ROLL_WINDOW, min_periods=ROLL_WINDOW).mean().values
+            pd.Series(s).shift(1).rolling(ROLL_WINDOW, min_periods=ROLL_WINDOW).mean().values
         )
         feat[f"{col}_roll_std"]  = (
-            pd.Series(s).rolling(ROLL_WINDOW, min_periods=ROLL_WINDOW).std().values
+            pd.Series(s).shift(1).rolling(ROLL_WINDOW, min_periods=ROLL_WINDOW).std().values
         )
         feat[f"{col}_delta"]     = np.concatenate([[0.0], np.diff(s)])
 
-        # Slope — computed per-row using a trailing window
+        # Slope — computed per-row using a trailing window (past values only)
         slopes = np.full(len(s), np.nan)
         for i in range(SLOPE_WINDOW, len(s)):
-            slopes[i] = _slope(s[i - SLOPE_WINDOW: i])
+            slopes[i] = _slope(s[i - SLOPE_WINDOW - 1: i - 1])
         feat[f"{col}_slope"] = slopes
 
     # Cross-sensor features

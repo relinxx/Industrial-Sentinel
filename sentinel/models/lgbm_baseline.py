@@ -95,15 +95,21 @@ def evaluate_lgbm(
     proba = booster.predict(X_test)
     preds = proba.argmax(axis=1)
 
+    # Get unique labels present in test set (filter out phantom classes)
+    unique_labels = np.unique(np.concatenate([y_test, preds]))
+    target_names_filtered = [REGIME_NAMES[i] for i in unique_labels]
+
     report = classification_report(
         y_test, preds,
-        target_names=REGIME_NAMES,
+        labels=unique_labels,
+        target_names=target_names_filtered,
         output_dict=True,
+        zero_division=0,
     )
-    cm = confusion_matrix(y_test, preds)
+    cm = confusion_matrix(y_test, preds, labels=unique_labels)
 
     print("\nLightGBM Classification Report:")
-    print(classification_report(y_test, preds, target_names=REGIME_NAMES))
+    print(classification_report(y_test, preds, labels=unique_labels, target_names=target_names_filtered, zero_division=0))
 
     result = {"classification_report": report, "confusion_matrix": cm.tolist()}
     with open(os.path.join(artifacts_dir, "lgbm_eval.json"), "w") as f:

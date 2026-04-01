@@ -50,42 +50,43 @@ def conformal_thresholds(
     coverage: float = 0.95,
 ) -> dict:
     """
-    Compute per-regime conformal anomaly thresholds.
+    Compute conformal anomaly threshold using HEALTHY samples only.
 
-    For each regime, we treat the anomaly scores from that regime's
-    calibration samples as the null distribution and compute the
-    coverage-guaranteed threshold.
+    The null distribution for anomaly detection is the set of healthy (regime 0)
+    samples. The threshold answers: "at what anomaly score value do 95% of 
+    healthy samples fall below?"
 
     Parameters
     ----------
     anomaly_scores : (N,) float32 sigmoid outputs from the model
-    regime_labels  : (N,) int regime predictions from the model
+    regime_labels  : (N,) int TRUE regime labels (not predictions)
     coverage       : desired coverage (default 0.95)
 
     Returns
     -------
     dict with keys:
-        "global"              : float threshold over all samples
-        "per_regime"          : dict regime_name → threshold
+        "threshold"           : float global threshold based on healthy samples
         "coverage"            : float requested coverage
         "n_calibration_total" : int total samples used
+        "n_healthy"           : int number of healthy samples used
     """
-    thresholds = {}
-    for i, name in enumerate(REGIME_NAMES):
-        mask = regime_labels == i
-        regime_scores = anomaly_scores[mask]
-        if len(regime_scores) < 10:
-            thresholds[name] = conformal_threshold(anomaly_scores, coverage)
-        else:
-            thresholds[name] = conformal_threshold(regime_scores, coverage)
-
-    global_q = conformal_threshold(anomaly_scores, coverage)
+    # Null distribution = healthy samples only (regime 0)
+    healthy_mask = regime_labels == 0
+    healthy_scores = anomaly_scores[healthy_mask]
+    
+    if len(healthy_scores) < 10:
+        raise ValueError(
+            f"Insufficient healthy samples for calibration: {len(healthy_scores)} < 10. "
+            "Need more regime 0 (healthy) samples in calibration set."
+        )
+    
+    threshold = conformal_threshold(healthy_scores, coverage)
 
     return {
-        "global":               global_q,
-        "per_regime":           thresholds,
+        "threshold":            threshold,
         "coverage":             coverage,
         "n_calibration_total":  len(anomaly_scores),
+        "n_healthy":            int(healthy_mask.sum()),
         "regime_counts":        {
             name: int((regime_labels == i).sum())
             for i, name in enumerate(REGIME_NAMES)
@@ -102,31 +103,37 @@ def run_calibration(
 ) -> dict:
     """
     Run calibration on a DataLoader and save threshold config to disk.
+    
+    Uses TRUE regime labels from the loader to identify healthy samples,
+    then computes a single global threshold based on the null distribution
+    (healthy samples only).
     """
     import torch
-    import torch.nn.functional as F
 
     model.eval()
     all_scores  = []
-    all_regimes = []
+    all_true_regimes = []
 
     with torch.no_grad():
         for x, reg, anom, fcast in loader:
             x = x.to(device)
-            logits, anom_score, _ = model(x)
+            _, anom_score, _ = model(x)
             all_scores.append(anom_score.squeeze(-1).cpu().numpy())
-            all_regimes.append(logits.argmax(dim=-1).cpu().numpy())
+            # Use TRUE labels from loader, not predictions
+            all_true_regimes.append(reg.numpy())
 
     scores  = np.concatenate(all_scores)
-    regimes = np.concatenate(all_regimes)
+    regimes = np.concatenate(all_true_regimes)
 
     result = conformal_thresholds(scores, regimes, coverage)
 
     print(f"\nConformal calibration (coverage={coverage}):")
-    print(f"  Global threshold  : {result['global']:.4f}")
-    for name, thr in result["per_regime"].items():
-        count = result["regime_counts"][name]
-        print(f"  {name:<18}: {thr:.4f}  (n={count})")
+    print(f"  Threshold (healthy): {result['threshold']:.6f}")
+    print(f"  Healthy samples    : {result['n_healthy']}")
+    print(f"  Total samples      : {result['n_calibration_total']}")
+    print(f"\nRegime distribution:")
+    for name, count in zip(REGIME_NAMES, [result['regime_counts'][n] for n in REGIME_NAMES]):
+        print(f"  {name:<18}: {count}")
 
     path = os.path.join(artifacts_dir, "thresholds.json")
     with open(path, "w") as f:

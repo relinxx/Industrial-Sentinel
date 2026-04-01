@@ -1,0 +1,12 @@
+{
+  "threshold": 2.6396879741436967e-06,
+  "coverage": 0.95,
+  "n_calibration_total": 107922,
+  "n_healthy": 94843,
+  "regime_counts": {
+    "HEALTHY": 94843,
+    "CAVITATION": 3950,
+    "BEARING_WEAR": 4713,
+    "SEAL_LEAK": 4416
+  }
+}
