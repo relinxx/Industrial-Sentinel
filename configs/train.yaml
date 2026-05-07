@@ -1,0 +1,26 @@
+# IndustrialSentinel training configuration
+# All values override the defaults in train.py
+
+seed:          42
+seq_len:       60          # input window length (timesteps)
+batch_size:    64
+epochs:        40
+lr:            3.0e-4
+weight_decay:  1.0e-4
+dropout:       0.30
+
+# Loss weights
+w_regime:      1.0         # regime classification
+w_anomaly:     0.50        # anomaly score
+w_forecast:    0.30        # short-horizon forecast
+
+patience:      8           # early stopping patience (val_loss)
+
+# Simulation
+sim_hours:     200.0       # total hours of synthetic data to generate
+sim_seed:      42
+sample_rate_hz: 1.0        # Hz
+
+# Paths
+artifacts_dir: artifacts
+data_dir:      data/sim
