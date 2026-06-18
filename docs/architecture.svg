@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">Industrial Sentinel architecture</title>
+  <desc id="desc">Six industrial sensor channels pass through leakage-safe feature engineering and a shared temporal CNN with regime, anomaly, and forecast heads before ONNX export.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0L10 5L0 10Z" fill="#334155"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="700" fill="#F7F8F5"/>
+  <rect x="48" y="38" width="1104" height="624" rx="18" fill="#FFFFFF" stroke="#D8DED8"/>
+  <g font-family="Arial, sans-serif">
+    <text x="82" y="92" fill="#0F172A" font-size="31" font-weight="700">Industrial Sentinel</text>
+    <text x="82" y="126" fill="#64748B" font-size="17">One sensor window. Three production outputs.</text>
+
+    <rect x="82" y="177" width="205" height="250" rx="14" fill="#EDF5F0" stroke="#B7D5C1"/>
+    <text x="108" y="214" fill="#047857" font-size="13" font-weight="700">01 / SIGNALS</text>
+    <text x="108" y="248" fill="#0F172A" font-size="20" font-weight="700">SCADA window</text>
+    <text x="108" y="282" fill="#475569" font-size="14">Pressure</text>
+    <text x="108" y="308" fill="#475569" font-size="14">Flow rate</text>
+    <text x="108" y="334" fill="#475569" font-size="14">Motor current</text>
+    <text x="108" y="360" fill="#475569" font-size="14">Vibration RMS</text>
+    <text x="108" y="386" fill="#475569" font-size="14">Temperature</text>
+
+    <rect x="355" y="177" width="220" height="250" rx="14" fill="#FFFFFF" stroke="#CBD5E1"/>
+    <text x="381" y="214" fill="#047857" font-size="13" font-weight="700">02 / FEATURES</text>
+    <text x="381" y="248" fill="#0F172A" font-size="20" font-weight="700">Streaming pipeline</text>
+    <text x="381" y="282" fill="#475569" font-size="14">Raw + rolling statistics</text>
+    <text x="381" y="308" fill="#475569" font-size="14">Trends + first differences</text>
+    <text x="381" y="334" fill="#475569" font-size="14">Cross-sensor ratios</text>
+    <text x="381" y="360" fill="#475569" font-size="14">Frequency features</text>
+    <rect x="381" y="382" width="168" height="24" rx="12" fill="#E2E8F0"/>
+    <text x="408" y="399" fill="#334155" font-size="12" font-weight="700">60 x 34 tensor</text>
+
+    <rect x="643" y="177" width="220" height="250" rx="14" fill="#172033"/>
+    <text x="669" y="214" fill="#6EE7B7" font-size="13" font-weight="700">03 / MODEL</text>
+    <text x="669" y="248" fill="#FFFFFF" font-size="20" font-weight="700">Temporal 1D-CNN</text>
+    <text x="669" y="282" fill="#CBD5E1" font-size="14">Dilated convolution blocks</text>
+    <text x="669" y="308" fill="#CBD5E1" font-size="14">Global average pooling</text>
+    <text x="669" y="334" fill="#CBD5E1" font-size="14">Shared representation</text>
+    <rect x="669" y="371" width="168" height="35" rx="8" fill="#047857"/>
+    <text x="704" y="394" fill="#FFFFFF" font-size="13" font-weight="700">128 dimensions</text>
+
+    <rect x="931" y="177" width="187" height="250" rx="14" fill="#FFF7ED" stroke="#FED7AA"/>
+    <text x="957" y="214" fill="#C2410C" font-size="13" font-weight="700">04 / HEADS</text>
+    <text x="957" y="248" fill="#0F172A" font-size="19" font-weight="700">Multi-task output</text>
+    <text x="957" y="286" fill="#475569" font-size="14">Regime: 4 classes</text>
+    <text x="957" y="321" fill="#475569" font-size="14">Anomaly: score</text>
+    <text x="957" y="356" fill="#475569" font-size="14">Forecast: 10 x 6</text>
+    <text x="957" y="397" fill="#C2410C" font-size="12" font-weight="700">ONE INFERENCE CALL</text>
+  </g>
+
+  <g stroke="#334155" stroke-width="2" fill="none" marker-end="url(#arrow)">
+    <path d="M287 302H341"/>
+    <path d="M575 302H629"/>
+    <path d="M863 302H917"/>
+  </g>
+
+  <path d="M1025 427V490" stroke="#334155" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <rect x="355" y="515" width="508" height="98" rx="14" fill="#EDF5F0" stroke="#B7D5C1"/>
+  <text x="385" y="550" fill="#047857" font-family="Arial, sans-serif" font-size="13" font-weight="700">05 / DEPLOYMENT BUNDLE</text>
+  <text x="385" y="580" fill="#0F172A" font-family="Arial, sans-serif" font-size="19" font-weight="700">ONNX graph + scaler + feature spec + thresholds + tensor contract</text>
+  <text x="82" y="640" fill="#64748B" font-family="Arial, sans-serif" font-size="14">PyTorch training · conformal calibration · ONNX Runtime · .NET-ready contract</text>
+</svg>
